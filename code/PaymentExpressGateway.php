@@ -6,6 +6,8 @@ class PaymentExpressGateway_PxPay extends PaymentGateway_GatewayHosted {
 	protected $pxPayUserID;
 	protected $pxPayKey;
 
+	private $txnID;
+
   protected $supportedCurrencies = array(
     'NZD' => 'New Zealand Dollar',
     'USD' => 'United States Dollar',
@@ -30,6 +32,7 @@ class PaymentExpressGateway_PxPay extends PaymentGateway_GatewayHosted {
   }
   
   public function process($data) {
+	  $this->setTxnID(uniqid('ID'));
 
     //Construct the request
     $request = new PxPayRequest();
@@ -44,7 +47,7 @@ class PaymentExpressGateway_PxPay extends PaymentGateway_GatewayHosted {
     $request->setUrlSuccess($this->returnURL);
 
     //Generate a unique identifier for the transaction
-    $request->setTxnId(uniqid('ID')); 
+    $request->setTxnId($this->getTxnID());
     $request->setTxnType('Purchase');
     
     //Get encrypted URL from DPS to redirect the user to
@@ -69,6 +72,14 @@ class PaymentExpressGateway_PxPay extends PaymentGateway_GatewayHosted {
     	return new PaymentGateway_Incomplete();
     }
   }
+
+	private function setTxnID($txnID) {
+		$this->txnID = $txnID;
+	}
+
+	public function getTxnID() {
+		return $this->txnID;
+	}
   
   public function makeProcessRequest($request, $data) {
 		
