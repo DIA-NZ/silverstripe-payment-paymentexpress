@@ -93,37 +93,36 @@ class PaymentExpressGateway_PxPay extends PaymentGateway_GatewayHosted {
    * 
    * @param SS_HTTPRequest $request Request from the gateway - transaction response
    * @return PaymentGateway_Result
-   */ 
+   */
 	public function check($request) {
-
 		$data = $request->getVars();
 
 		$url = $request->getVar('url');
 		$result = $request->getVar('result');
 		$userID = $request->getVar('userid');
-		
+
 		//Construct the request to check the payment status
-    $request = new PxPayLookupRequest();
-    $request->setResponse($result);
+		$request = new PxPayLookupRequest();
+		$request->setResponse($result);
 
-    //Get encrypted URL from DPS to redirect the user to
-    $request_string = $this->makeCheckRequest($request, $data);
-    
-    //Obtain output XML
-    $response = new MifMessage($request_string);
-    
-    //Parse output XML
-    $success = $response->get_element_text('Success');
+		//Get encrypted URL from DPS to redirect the user to
+		$request_string = $this->makeCheckRequest($request, $data);
 
-    if ($success && is_numeric($success) && $success > 0) {
-    	return new PaymentGateway_Success();
-    }
-    else if (is_numeric($success) && $success == 0) {
-    	return new PaymentGateway_Failure();
-    }
-    else {
-    	return new PaymentGateway_Incomplete();
-    }
+		//Obtain output XML
+		$response = new MifMessage($request_string);
+
+		$this->setTxnID($response->get_element_text('TxnId'));
+
+		//Parse output XML
+		$success = $response->get_element_text('Success');
+
+		if ($success && is_numeric($success) && $success > 0) {
+			return new PaymentGateway_Success();
+		} else if (is_numeric($success) && $success == 0) {
+			return new PaymentGateway_Failure();
+		} else {
+			return new PaymentGateway_Incomplete();
+		}
 	}
 	
 	public function makeCheckRequest($request, $data) {
