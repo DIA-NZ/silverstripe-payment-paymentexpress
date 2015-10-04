@@ -6,7 +6,7 @@ class PaymentExpressGateway_PxPay extends PaymentGateway_GatewayHosted {
 	protected $pxPayUserID;
 	protected $pxPayKey;
 
-	private $txnID;
+	protected $txnID;
 
   protected $supportedCurrencies = array(
     'NZD' => 'New Zealand Dollar',
@@ -135,6 +135,8 @@ class PaymentExpressGateway_PxPay extends PaymentGateway_GatewayHosted {
 
 class PaymentExpressGateway_PxPay_Mock extends PaymentExpressGateway_PxPay {
 
+	const MOCK_TXN_ID = 'ID5192f4a1MOCK';
+
   public function makeProcessRequest($request, $data) {
 
   	$this->onBeforeMakeRequest();
@@ -195,7 +197,7 @@ class PaymentExpressGateway_PxPay_Mock extends PaymentExpressGateway_PxPay {
 			    	<CardNumber>411111........11</CardNumber>
 			    	<DateExpiry>1213</DateExpiry>
 			    	<ClientInfo>123.255.12.345</ClientInfo>
-			    	<TxnId>ID5192f4a180c796-mock</TxnId>
+			    	<TxnId>' . self::MOCK_TXN_ID . '</TxnId>
 			    	<EmailAddress></EmailAddress>
 			    	<DpsTxnRef>0000000106502ae12-mock</DpsTxnRef>
 			    	<BillingId></BillingId>
@@ -228,7 +230,7 @@ class PaymentExpressGateway_PxPay_Mock extends PaymentExpressGateway_PxPay {
 			    	<CardNumber>411111........11</CardNumber>
 			    	<DateExpiry>1213</DateExpiry>
 			    	<ClientInfo>123.255.12.345</ClientInfo>
-			    	<TxnId>ID5192f4a180c796-mock</TxnId>
+			    	<TxnId>' . self::MOCK_TXN_ID . '</TxnId>
 			    	<EmailAddress></EmailAddress>
 			    	<DpsTxnRef>0000000106502ae12-mock</DpsTxnRef>
 			    	<BillingId></BillingId>
@@ -252,6 +254,15 @@ class PaymentExpressGateway_PxPay_Mock extends PaymentExpressGateway_PxPay {
     
     return $request_string;
 	}
+
+	public function getTxnID() {
+		return self::MOCK_TXN_ID;
+	}
+
+	public function setTxnID($txnID) {
+		$this->txnID = self::MOCK_TXN_ID;
+	}
+
 
 }
 
